@@ -11,6 +11,11 @@ import (
 	"os"
 )
 
+type TlsCat struct {
+	crt *x509.Certificate
+	key string
+}
+
 func (c TlsCat) keyCompare(key_file string, verbose bool) error {
 	cert_modulus := c.crt.PublicKey.(*rsa.PublicKey).N.String()
 	k, err := ioutil.ReadFile(key_file)
@@ -47,7 +52,7 @@ func (c TlsCat) printCertificate() {
 	fmt.Println("Certificate expiration date:", c.crt.NotAfter)
 }
 
-func readCertificate(crt, server, port, servername string, stat fs.FileInfo) (*x509.Certificate, error) {
+func ReadCertificate(crt, server, port, servername string, stat fs.FileInfo) (*x509.Certificate, error) {
 	var cert []byte
 	var err error
 
@@ -58,7 +63,7 @@ func readCertificate(crt, server, port, servername string, stat fs.FileInfo) (*x
 		}
 		conn, err := tls.Dial("tcp", server+":"+port, config)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to connect to %s:%s: %s\n", server, port, err)
+			return nil, fmt.Errorf("Failed to connect to %s:%s: %s", server, port, err)
 		}
 		defer conn.Close()
 		return conn.ConnectionState().PeerCertificates[0], nil
@@ -67,12 +72,12 @@ func readCertificate(crt, server, port, servername string, stat fs.FileInfo) (*x
 	if len(crt) > 0 {
 		cert, err = ioutil.ReadFile(crt)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to read certificate file: %s\n", err)
+			return nil, fmt.Errorf("Failed to read certificate file: %s", err)
 		}
 	} else if (stat.Mode() & os.ModeCharDevice) == 0 {
 		cert, err = ioutil.ReadAll(os.Stdin)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to read certificate from stdin: %s\n", err)
+			return nil, fmt.Errorf("Failed to read certificate from stdin: %s", err)
 		}
 	} else {
 		return nil, fmt.Errorf("No certificate provided")

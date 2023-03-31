@@ -1,4 +1,4 @@
-module main
+module tlscat
 
 go 1.18
 

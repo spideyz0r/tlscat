@@ -1,17 +1,11 @@
 package main
 
 import (
-	"crypto/x509"
 	"log"
 	"os"
 
 	"github.com/pborman/getopt"
 )
-
-type TlsCat struct {
-	crt *x509.Certificate
-	key string
-}
 
 func main() {
 	help := getopt.BoolLong("help", 'h', "display this help")
@@ -35,7 +29,7 @@ func main() {
 
 	stat, _ := os.Stdin.Stat()
 
-	c.crt, err = readCertificate(*crt, *server, *port, *server_name, stat)
+	c.crt, err = ReadCertificate(*crt, *server, *port, *server_name, stat)
 	if err != nil {
 		log.Fatal(err)
 	}
