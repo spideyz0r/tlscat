@@ -9,8 +9,8 @@ import (
 )
 
 type TlsCat struct {
-	crt      *x509.Certificate
-	key      string
+	crt *x509.Certificate
+	key string
 }
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 	crt := getopt.StringLong("crt", 'c', "", "crt file")
 	server := getopt.StringLong("server", 's', "", "remote server")
 	server_name := getopt.StringLong("server-name", 'n', "", "optional server name")
-	port := getopt.StringLong("port", 'p', "443", "optional port, default:80")
+	port := getopt.StringLong("port", 'p', "443", "optional port, default:443")
 	key_file := getopt.StringLong("key-file", 'k', "", "key file")
 	key_check := getopt.BoolLong("key-check", 'C', "private key validation")
 	verbose := getopt.BoolLong("verbose", 'v', "verbose output")

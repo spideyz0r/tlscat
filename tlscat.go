@@ -17,15 +17,18 @@ func (c TlsCat) keyCompare(key_file string, verbose bool) error {
 	if err != nil {
 		return fmt.Errorf("Failed to read key file: %s\n", err)
 	}
+
 	block, _ := pem.Decode(k)
 	if block == nil || block.Type != "RSA PRIVATE KEY" {
-        return fmt.Errorf("Failed to decode PEM block containing RSA private key")
-    }
+		return fmt.Errorf("Failed to decode PEM block containing RSA private key")
+	}
+
 	pkey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	if err != nil {
 		return fmt.Errorf("Failed to parse private key: %s\n", err)
 	}
 	modulus := pkey.N
+
 	if verbose {
 		fmt.Println("Private key modulus:", modulus)
 		fmt.Println("Certificate key modulus:", cert_modulus)
@@ -49,11 +52,11 @@ func readCertificate(crt, server, port, servername string, stat fs.FileInfo) (*x
 	var err error
 
 	if len(server) > 0 {
-		config := &tls.Config{ InsecureSkipVerify: true }
+		config := &tls.Config{InsecureSkipVerify: true}
 		if len(servername) > 0 {
 			config.ServerName = servername
 		}
-		conn, err := tls.Dial("tcp", server + ":" + port, config)
+		conn, err := tls.Dial("tcp", server+":"+port, config)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to connect to %s:%s: %s\n", server, port, err)
 		}
@@ -61,7 +64,7 @@ func readCertificate(crt, server, port, servername string, stat fs.FileInfo) (*x
 		return conn.ConnectionState().PeerCertificates[0], nil
 	}
 
-	if len(crt) >0{
+	if len(crt) > 0 {
 		cert, err = ioutil.ReadFile(crt)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to read certificate file: %s\n", err)
